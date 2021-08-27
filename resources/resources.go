@@ -42,5 +42,5 @@ func Init(r *gin.Engine) {
 	r.SetHTMLTemplate(tmpl)
 
 	// static files
-	r.StaticFS("/public", http.FS(assetsFS))
+	r.StaticFS("/oauth2/public", http.FS(assetsFS))
 }
