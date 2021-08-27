@@ -1,0 +1,76 @@
+{{ define "tmpl/info.tmpl" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="ID" content="{{ .oauthProviderInfo.ClientID }}">
+
+    <title>{{ .title }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">    <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+    <link href="/public/css/header.css" rel="stylesheet">
+    <link href="/public/css/info.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        {{ template "tmpl/header.tmpl" . }}
+
+        <div id="main">
+            <div id="info">
+                <table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <td>Client ID</td>
+                            <td>{{ .oauthProviderInfo.ClientID }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Client Secret</td>
+                            <td>{{ .oauthProviderInfo.ClientSecret }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Authorization URL</td>
+                            <td>https://{{ .host }}/oauth2/authorize/{{ .oauthProviderInfo.ClientID }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Access Token URL</td>
+                            <td>https://{{ .host }}/oauth2/token/{{ .oauthProviderInfo.ClientID }}</td>
+                        </tr>
+
+                        <tr>
+                            <td>Redirect URL</td>
+                            <td>*</td>
+                        </tr>
+
+                        <tr>
+                            <td>Users</td>
+                            <td>accept any user and password</td>
+                        </tr>
+
+
+                    <tbody>
+                </table>
+            </div>
+
+            <div id="logs" class="vstack gap-2 overflow-auto logs_block">
+                <code class="bg-secondary text-white p-2">
+                    Waiting {{ .oauthProviderInfo.ClientID }} request ...
+                </code>
+            </div>
+        </div> 
+        {{ template "tmpl/footer.tmpl" . }}
+    </div>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+    <script src="/public/js/info.js"></script>
+</body>
+
+</html>
+{{ end }}

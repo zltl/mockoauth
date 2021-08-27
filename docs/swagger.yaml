@@ -1,0 +1,76 @@
+info:
+  contact: {}
+  description: This is an oauth mock application.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Mock Oauth2 API
+  version: "1.0"
+paths:
+  /oauth2/:
+    get:
+      description: show logs and details of Authorization Code Grant oauth mode
+      produces:
+      - text/html
+      summary: Authorization Code Grant mock page
+  /oauth2/acg/authorize/:ID:
+    post:
+      description: show logs and details of Authorization Code Grant oauth mode
+      produces:
+      - text/html
+      summary: oauth2 authorize login page
+  /oauth2/authorize/:ID:
+    get:
+      description: show logs and details of Authorization Code Grant oauth mode
+      produces:
+      - text/html
+      summary: oauth2 authorize login page
+  /oauth2/token/:ID:
+    get:
+      description: request token by code
+      produces:
+      - text/html
+      summary: oauth2 token request
+  /oauth2/ws/:ID:
+    get:
+      description: send logs to client and receive requests from clients.
+      summary: Authorization Code Grant mock page, websocket connection
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
+  OAuth2AccessCode:
+    authorizationUrl: https://example.com/oauth/authorize
+    flow: accessCode
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+  OAuth2Application:
+    flow: application
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+      write: ' Grants write access'
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+  OAuth2Implicit:
+    authorizationUrl: https://example.com/oauth/authorize
+    flow: implicit
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+      write: ' Grants write access'
+    type: oauth2
+  OAuth2Password:
+    flow: password
+    scopes:
+      admin: ' Grants read and write access to administrative information'
+      read: ' Grants read access'
+      write: ' Grants write access'
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+swagger: "2.0"
+x-extension-openapi:
+  example: value on a json format

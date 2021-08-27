@@ -1,0 +1,57 @@
+{{ define "tmpl/authorize.tmpl" }}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="ID" content="{{ .oauthProviderInfo.ClientID }}">
+
+    <title>{{ .title }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">    <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+    <link href="/public/css/header.css" rel="stylesheet">
+    <link href="/public/css/authorize.css" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <div class="container">
+        {{ template "tmpl/header.tmpl" . }}
+
+        <div>
+            <p>By signing in, you are authorizing {{ .redirectHost }} to access your data.</p>
+        </div>
+        <div class="login_block">
+            <form id="login_form" action="" method="POST">
+                <div class="form-group">
+                    <label for="username">User Name</label>
+                    <input type="text" class="form-control" name="username" required
+                        placeholder="Please enter your user name">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" placeholder="Please enter your password">
+                </div>
+
+                {{ range .params }}
+                    <input type="hidden" id="{{ .Key }}" name="{{ .Key }}" value="{{ .Value }}">
+                {{ end }}
+
+                <button type="submit" class="btn btn-success">Login</button>
+            </form>
+        </div>
+        
+        {{ template "tmpl/footer.tmpl" . }}
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script src="/public/js/authorize.js"></script>
+</body>
+
+</html>
+
+{{ end }}
