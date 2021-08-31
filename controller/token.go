@@ -24,17 +24,6 @@ func (s *Controller) Token(c *gin.Context) {
 	code := c.PostForm("code")
 	redirectURI := c.PostForm("redirect_uri")
 
-	s.mu.Lock()
-	wsConn, ok := s.wsMap[ID]
-	s.mu.Unlock()
-	if ok {
-		logs := fmt.Sprintf("POST %s\n\n", c.Request.RequestURI)
-		for k, v := range c.Request.Form {
-			logs += fmt.Sprintf("%s %s\n", k, v[0])
-		}
-		wsConn.ch <- logs
-	}
-
 	if grantType == "authorization_code" {
 		claimi, err := jwt.ParseWithClaims(code, &viewmodule.CodeJWTClaim{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(s.jwtSecret), nil
@@ -50,18 +39,12 @@ func (s *Controller) Token(c *gin.Context) {
 		if redirectURI != codeClaim.RedirectURI {
 			logs := fmt.Sprintf("redirect uri not match, get %s, expected %s", redirectURI, codeClaim.RedirectURI)
 			log.Error(logs)
-			if ok {
-				wsConn.ch <- logs
-			}
 			c.String(http.StatusBadRequest, logs)
 			return
 		}
 		if time.Now().Unix() > codeClaim.ExpiresAt {
 			logs := fmt.Sprintf("token expired at %d", codeClaim.ExpiresAt)
 			log.Error(logs)
-			if ok {
-				wsConn.ch <- logs
-			}
 			c.String(http.StatusBadRequest, logs)
 			return
 		}
@@ -78,11 +61,6 @@ func (s *Controller) Token(c *gin.Context) {
 		tclaims.IsRefresh = true
 		reftoken, _ := tokenSrc.SignedString([]byte(s.jwtSecret))
 
-		if ok {
-			logs := fmt.Sprintf("access_token: %s\nrefresh_token: %s", actoken, reftoken)
-			wsConn.ch <- logs
-		}
-
 		c.JSON(http.StatusOK, gin.H{
 			"access_token":  actoken,
 			"token_type":    "Bearer",
@@ -91,7 +69,7 @@ func (s *Controller) Token(c *gin.Context) {
 		})
 	} else if grantType == "password" {
 		username := c.PostForm("username")
-		password := c.PostForm("password")
+		// password := c.PostForm("password")
 
 		tclaims := &viewmodule.TokenJWTClaim{}
 		tokenSrc := jwt.NewWithClaims(jwt.SigningMethodHS256, tclaims)
@@ -104,12 +82,6 @@ func (s *Controller) Token(c *gin.Context) {
 
 		tclaims.IsRefresh = true
 		reftoken, _ := tokenSrc.SignedString([]byte(s.jwtSecret))
-
-		if ok {
-			logs := fmt.Sprintf("username: %s\npassword:%s\naccess_token: %s\nrefresh_token: %s",
-				username, password, actoken, reftoken)
-			wsConn.ch <- logs
-		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"access_token":  actoken,
@@ -129,11 +101,6 @@ func (s *Controller) Token(c *gin.Context) {
 
 		tclaims.IsRefresh = true
 		reftoken, _ := tokenSrc.SignedString([]byte(s.jwtSecret))
-
-		if ok {
-			logs := fmt.Sprintf("access_token: %s\nrefresh_token: %s", actoken, reftoken)
-			wsConn.ch <- logs
-		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"access_token":  actoken,
@@ -171,12 +138,6 @@ func (s *Controller) Token(c *gin.Context) {
 			"expires_in":    3600,
 			"refresh_token": reftoken,
 		})
-
-		if ok {
-			logs := fmt.Sprintf("username: %s\naccess_token: %s\nrefresh_token: %s",
-				tclaims.Username, actoken, reftoken)
-			wsConn.ch <- logs
-		}
 	} else {
 		log.Error("unknown grant type")
 		c.String(http.StatusBadRequest, "")

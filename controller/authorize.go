@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/base64"
-	"fmt"
 	"mockoauth/viewmodule"
 	"net/http"
 	"net/url"
@@ -31,11 +30,6 @@ func (s *Controller) Authorize(c *gin.Context) {
 	log.Infof("ID=%s", ID)
 	log.Infof("grant_type=%s, requestURI=%s", grantType, c.Request.RequestURI)
 
-	logs := fmt.Sprintf("GET %s\n\n", c.Request.RequestURI)
-	s.mu.Lock()
-	wsConn, ok := s.wsMap[ID]
-	s.mu.Unlock()
-
 	oauthProviderInfo := viewmodule.OAuthProviderInfo{
 		ClientID:     clientInfo.ID,
 		ClientSecret: base64.RawURLEncoding.EncodeToString([]byte(clientInfo.ID)),
@@ -44,12 +38,7 @@ func (s *Controller) Authorize(c *gin.Context) {
 	var params []viewmodule.Pair
 	for k, v := range c.Request.URL.Query() {
 		log.Infof("%s: %s", k, v[0])
-		logs += fmt.Sprintf("%s: %s\n", k, v[0])
 		params = append(params, viewmodule.Pair{Key: k, Value: v[0]})
-	}
-
-	if ok {
-		wsConn.ch <- logs
 	}
 
 	c.HTML(http.StatusOK, "tmpl/authorize.tmpl",
@@ -87,10 +76,6 @@ func (s *Controller) AuthorizePost(c *gin.Context) {
 		nextURLValues.Add(k, v[0])
 	}
 
-	s.mu.Lock()
-	wsConn, ok := s.wsMap[ID]
-	s.mu.Unlock()
-
 	if responseType == "code" {
 		claims := &viewmodule.CodeJWTClaim{}
 		codeSrc := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -107,17 +92,6 @@ func (s *Controller) AuthorizePost(c *gin.Context) {
 
 		log.Infof("ID=%s", ID)
 		log.Infof("username=%s, password=%s, code=%s", username, password, code)
-
-		if ok {
-			logs := fmt.Sprintf("POST %s\n", c.Request.RequestURI)
-			logs += fmt.Sprintf("login username=%s, password=%s",
-				username, password)
-			wsConn.ch <- logs
-
-			tail, _ := url.QueryUnescape(nextURLValues.Encode())
-			logs = fmt.Sprintf("redirect to %s", redirectURI+"?"+tail)
-			wsConn.ch <- logs
-		}
 
 		c.Redirect(http.StatusFound, nextURL)
 	} else if responseType == "token" {
@@ -138,15 +112,5 @@ func (s *Controller) AuthorizePost(c *gin.Context) {
 		nextURL := redirectURI + "#" + nextURLValues.Encode()
 		c.Redirect(http.StatusFound, nextURL)
 
-		if ok {
-			logs := fmt.Sprintf("POST %s\n", c.Request.RequestURI)
-			logs += fmt.Sprintf("login username=%s, password=%s",
-				username, password)
-			wsConn.ch <- logs
-
-			tail, _ := url.QueryUnescape(nextURLValues.Encode())
-			logs = fmt.Sprintf("redirect to %s", redirectURI+"#"+tail)
-			wsConn.ch <- logs
-		}
 	}
 }
