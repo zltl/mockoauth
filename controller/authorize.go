@@ -135,7 +135,7 @@ func (s *Controller) AuthorizePost(c *gin.Context) {
 		nextURLValues.Add("access_token", actoken)
 		nextURLValues.Add("token_type", "bearer")
 		nextURLValues.Add("expires_in", "3600")
-		nextURL := redirectURI + "?" + nextURLValues.Encode()
+		nextURL := redirectURI + "#" + nextURLValues.Encode()
 		c.Redirect(http.StatusFound, nextURL)
 
 		if ok {
@@ -145,7 +145,7 @@ func (s *Controller) AuthorizePost(c *gin.Context) {
 			wsConn.ch <- logs
 
 			tail, _ := url.QueryUnescape(nextURLValues.Encode())
-			logs = fmt.Sprintf("redirect to %s", redirectURI+"?"+tail)
+			logs = fmt.Sprintf("redirect to %s", redirectURI+"#"+tail)
 			wsConn.ch <- logs
 		}
 	}
