@@ -19,4 +19,11 @@ func Init(r *gin.Engine) {
 		gacg.POST("/authorize/:ID", ctrl.AuthorizePost)
 		gacg.POST("/token/:ID", ctrl.Token)
 	}
+
+	clig := r.Group("/oauth2client")
+	{
+		clig.GET("/", ctrl.ClientPage)
+		clig.GET("/ws/:ID", ctrl.ClientPageWS)
+		clig.GET("/cb/:ID", ctrl.ClientPageCB)
+	}
 }

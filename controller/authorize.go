@@ -111,6 +111,5 @@ func (s *Controller) AuthorizePost(c *gin.Context) {
 		nextURLValues.Add("expires_in", "3600")
 		nextURL := redirectURI + "#" + nextURLValues.Encode()
 		c.Redirect(http.StatusFound, nextURL)
-
 	}
 }

@@ -1,0 +1,140 @@
+{{ define "tmpl/client.tmpl" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="ID" content="{{ .ID }}">
+
+    <title>{{ .title }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+    <link href="/oauth2/public/css/header.css" rel="stylesheet">
+    <link href="/oauth2/public/css/client.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        {{ template "tmpl/header.tmpl" . }}
+
+        <form action="/oauth2">
+            <button type="submit" class="btn btn-secondary">去往服务端模拟器</button>
+        </form>
+        <br>
+        <div id="main">
+
+            <div id="client_info">
+                <form novalidate>
+                    <label for="select_type" class="form-label">Linking type</label>
+                    <select autocomplete="on" id="select_type" name="select_type" class="form-select"
+                        aria-label="Default select example">
+                        <option selected value="Authorization Code Grant">Authorization Code Grant
+                        </option>
+                        <option value="Implicit Grant">Implicit Grant</option>
+                        <option value="Resource Owner Password Credentials Grant">Resource Owner
+                            Password Credentials Grant</option>
+                        <option value="Client Credentials Grant">Client Credentials Grant</option>
+                    </select>
+
+                    <div id="redirect_url_d">
+                        <label for="redirect_url" class="form-label">Redirect URL</label>
+                        <input autocomplete="on" id="redirect_url" name="redirect_url" class="form-control" type="text"
+                            value="" disabled readonly>
+                    </div>
+
+                    <div id="client_id_d">
+                        <label for="client_id" class="form-label">Client ID</label>
+                        <input autocomplete="on" id="client_id" name="client_id" class="form-control" type="text"
+                            value="" placeholder="client id">
+                    </div>
+                    <div id="client_secret_d">
+                        <label for="client_secret" class="form-label">Client Secret</label>
+                        <input autocomplete="on" id="client_secret" name="client_secret" class="form-control"
+                            type="text" value="" placeholder="client secret">
+                    </div>
+
+                    <div id="authorization_url_d">
+                        <label for="authorization_url" class="form-label">Authorization URL</label>
+                        <input autocomplete="on" id="authorization_url" name="authorization_url" class="form-control"
+                            type="text" value="" placeholder="https://quant67.com/oauth2/authorize/aabbcc">
+                    </div>
+
+                    <div id="token_url_d">
+                        <label for="token_url" class="form-label">Token URL</label>
+                        <input autocomplete="on" id="token_url" name="token_url" class="form-control" type="text"
+                            value="" placeholder="https://quant67.com/oauth2/token/aabbcc">
+                    </div>
+
+                    <div id="scope_d">
+                        <label for="scope" class="form-label">Scope</label>
+                        <input autocomplete="on" id="scope" name="scope" class="form-control" type="text" value="">
+                    </div>
+
+                    <div id="username_password">
+                        <div class="form-group">
+                            <label for="usernamex">User Name</label>
+                            <input autocomplete="on" id="usernamex" type="text" class="form-control" name="usernamex"
+                                placeholder="Please enter your user name">
+                        </div>
+                        <div class="form-group">
+                            <label for="passwordx">Password</label>
+                            <input autocomplete="on" id="passwordx" type="text" class="form-control" name="passwordx"
+                                placeholder="Please enter your password">
+                        </div>
+                    </div>
+                    <button id="start_button" type="button" class="btn btn-primary">Start link</button>
+
+                </form>
+            </div>
+
+
+
+            <hr>
+
+            <div id="code">
+                <p>code: </p>
+                <code id="code_content"></code>
+            </div>
+            <button id="get_token_button" type="button" class="btn btn-primary">Get Token</button>
+            <hr>
+
+            <div id="token">
+                <div>
+                    <p>access_token: </p>
+                    <code class="text-justify text-wrap" id="access_token_content"></code>
+                </div>
+                <div>
+                    <p>refresh_token: </p>
+                    <code class="text-justify text-wrap" id="refresh_token_content"></code>
+                </div>
+                <div>
+                    <p>expires_in: </p>
+                    <code class="text-justify text-wrap" id="expire_content"></code>
+                </div>
+            </div>
+            <button id="refresh_token_button" type="button" class="btn btn-primary">Refresh Token</button>
+
+            <hr>
+
+            <div id="logs" class="vstack gap-2 overflow-auto logs_block">
+                <code class="bg-secondary text-white p-2">
+                    Requesting ...
+                </code>
+            </div>
+        </div>
+        {{ template "tmpl/footer.tmpl" . }}
+    </div>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+
+    <script src="/oauth2/public/js/client.js"></script>
+</body>
+
+</html>
+{{ end }}

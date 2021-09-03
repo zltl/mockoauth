@@ -54,6 +54,27 @@ var doc = `{
                 "summary": "oauth2 authorize login page"
             }
         },
+        "/oauth2/oauth2client/": {
+            "get": {
+                "description": "show logs and details of Authorization Code Grant oauth mode",
+                "produces": [
+                    "text/html"
+                ],
+                "summary": "Authorization Code Grant mock page"
+            }
+        },
+        "/oauth2/oauth2client/cb/:ID": {
+            "get": {
+                "description": "show logs and details of Authorization Code Grant oauth mode",
+                "produces": [
+                    "text/html"
+                ],
+                "summary": "Authorization Code Grant mock page"
+            }
+        },
+        "/oauth2/oauth2client/ws/:ID": {
+            "get": {}
+        },
         "/oauth2/token/:ID": {
             "get": {
                 "description": "request token by code",
