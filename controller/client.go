@@ -63,8 +63,10 @@ func (s *Controller) ClientPageCB(c *gin.Context) {
 			"code":  code,
 			"state": state,
 		}
-		log, _ := json.Marshal(m)
-		wsConn.ch <- "--code--" + string(log)
+		msgs, _ := json.Marshal(m)
+		log.Infof("sending --code-- to rch")
+		wsConn.ch <- "--code--" + string(msgs)
+		log.Infof("sending --code-- ok")
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok, you can close this window and continue now."})
@@ -88,14 +90,14 @@ func (s *Controller) ClientPageWS(c *gin.Context) {
 
 	wsConn := &wsConn{
 		ws: ws,
-		ch: make(chan string, 10),
+		ch: make(chan string),
 	}
 
 	s.mu.Lock()
 	s.wsMap[ID] = wsConn
 	s.mu.Unlock()
 
-	rch := make(chan string, 10)
+	rch := make(chan string)
 	defer close(rch)
 
 	go func() {
@@ -105,6 +107,7 @@ func (s *Controller) ClientPageWS(c *gin.Context) {
 				log.Errorf("websocket read error: %s", err)
 				return
 			}
+			log.Infof("get message from c: %s", string(message))
 			rch <- string(message)
 		}
 	}()
@@ -130,6 +133,7 @@ func (s *Controller) ClientPageWS(c *gin.Context) {
 				return
 			}
 
+			log.Infof("get msg from ch: %s", msg)
 			if strings.HasPrefix(msg, "--code--") {
 				msg = strings.TrimPrefix(msg, "--code--")
 				var m map[string]string
