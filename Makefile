@@ -1,7 +1,6 @@
 
 
 build:
-	swag init
 	go build
 
 run: build
