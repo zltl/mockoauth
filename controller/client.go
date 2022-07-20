@@ -210,7 +210,8 @@ func (s *Controller) ClientPageWS(c *gin.Context) {
 
 			var msCurl viewmodule.WSMsg
 			msCurl.Type = "log"
-			msCurl.Data = fmt.Sprintf(`>>\ncurl -XPOST -H "Content-Type: %s" -H "Authorization: %s" %s -d "%s"`,
+			msCurl.Data = fmt.Sprintf(`>>
+curl -XPOST -H "Content-Type: %s" -H "Authorization: %s" %s -d "%s"`,
 				req.Header.Get("Content-Type"), req.Header.Get("Authorization"),
 				m["token_url"], values.Encode())
 			toSend1, _ := json.Marshal(&msCurl)
