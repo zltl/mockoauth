@@ -207,19 +207,28 @@ func (s *Controller) ClientPageWS(c *gin.Context) {
 			req.Header.Set("Authorization",
 				"Basic "+base64.StdEncoding.EncodeToString(
 					[]byte(m["client_id"]+":"+m["client_secret"])))
+
+			var msCurl viewmodule.WSMsg
+			msCurl.Type = "log"
+			msCurl.Data = fmt.Sprintf(`>>\ncurl -XPOST -H "Content-Type: %s" -H "Authorization: %s" %s -d "%s"`,
+				req.Header.Get("Content-Type"), req.Header.Get("Authorization"),
+				m["token_url"], values.Encode())
+			toSend1, _ := json.Marshal(&msCurl)
+			ws.WriteMessage(websocket.TextMessage, toSend1)
+
 			resp, err := http.DefaultClient.Do(req)
 			if err != nil {
 				var ms viewmodule.WSMsg
 				log.Errorf("get token error: %s", err)
 				ms.Type = "log"
-				ms.Data = fmt.Sprintf("requesting error: %s", err)
+				ms.Data = fmt.Sprintf("<<\nrequesting error: %s", err)
 				toSend, _ := json.Marshal(&ms)
 				ws.WriteMessage(websocket.TextMessage, toSend)
 				continue
 			}
 			var ms viewmodule.WSMsg
 			ms.Type = "log"
-			ms.Data = resp.Proto + " " + resp.Status + "\n"
+			ms.Data = "<<\n" + resp.Proto + " " + resp.Status + "\n"
 			for k, v := range resp.Header {
 				ms.Data += k + ": " + strings.Join(v, ",") + "\n"
 			}
