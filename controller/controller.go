@@ -29,7 +29,7 @@ func NewController() *Controller {
 		jwtSecret: "ZGQyMWE4ZDEyYzNiZGRhYWIwYzk1NzNmMjkyNDY4OTIgIG1vY2tvYXV0aAo",
 	}
 	r.wsClientMap.Init()
-	r.wsClientMap.Init()
+	r.wsProviderMap.Init()
 	return r
 }
 
