@@ -74,19 +74,21 @@ func (m *WSMap) Get(id string) []*wsConn {
 	return clist
 }
 
-func (m *WSMap) SendTo(id string, msg string) {
-
+func sendToConnCh(c *wsConn, msg string) {
 	defer func() {
 		if r := recover(); r != nil {
-			logrus.Error("Recovered in SendTo", r)
+			logrus.Error("Recovered in sendToConnCh", r)
 		}
 	}()
+	c.ch <- msg
+}
 
+func (m *WSMap) SendTo(id string, msg string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
 	clist := m.m[id]
 	for _, c := range clist {
-		c.ch <- msg
+		sendToConnCh(c, msg)
 	}
 }
