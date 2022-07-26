@@ -40,7 +40,6 @@ func (s *Controller) ClientPage(c *gin.Context) {
 			"host":   host,
 			"client": clientInfo,
 		})
-
 }
 
 // ClientPage godoc
@@ -50,24 +49,18 @@ func (s *Controller) ClientPage(c *gin.Context) {
 // @Router /oauth2/oauth2client/cb/:ID [get]
 func (s *Controller) ClientPageCB(c *gin.Context) {
 	ID := c.Param("ID")
-	s.mu.Lock()
-	wsConn, ok := s.wsMap[ID]
-	s.mu.Unlock()
-
 	code := c.Query("code")
 	state := c.Query("state")
 	log.Infof("ID=%s, code=%s, state=%s", ID, code, state)
 
-	if ok {
-		m := map[string]string{
-			"code":  code,
-			"state": state,
-		}
-		msgs, _ := json.Marshal(m)
-		log.Infof("sending --code-- to rch")
-		wsConn.ch <- "--code--" + string(msgs)
-		log.Infof("sending --code-- ok")
+	m := map[string]string{
+		"code":  code,
+		"state": state,
 	}
+	msgs, _ := json.Marshal(m)
+	log.Infof("sending --code-- to rch: %s", string(msgs))
+	s.wsClientMap.SendTo(ID, "--code--"+string(msgs))
+	log.Infof("sending --code-- ok")
 
 	c.JSON(http.StatusOK, gin.H{"status": "ok, you can close this window and continue now."})
 }
@@ -93,9 +86,7 @@ func (s *Controller) ClientPageWS(c *gin.Context) {
 		ch: make(chan string),
 	}
 
-	s.mu.Lock()
-	s.wsMap[ID] = wsConn
-	s.mu.Unlock()
+	s.wsClientMap.Put(ID, wsConn)
 
 	rch := make(chan string)
 	defer close(rch)
@@ -115,9 +106,8 @@ func (s *Controller) ClientPageWS(c *gin.Context) {
 	defer func() {
 		wsConn.ws.Close()
 		close(wsConn.ch)
-		s.mu.Lock()
-		delete(s.wsMap, ID)
-		s.mu.Unlock()
+
+		s.wsClientMap.Remove(ID, wsConn)
 	}()
 
 	for {

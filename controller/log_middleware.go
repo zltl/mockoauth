@@ -25,13 +25,6 @@ func (w bodyLogWriter) Write(b []byte) (int, error) {
 func (s *Controller) LogsMiddleware(c *gin.Context) {
 	ID := c.Param("ID")
 
-	s.mu.Lock()
-	wsConn, ok := s.wsMap[ID]
-	s.mu.Unlock()
-	if !ok {
-		return
-	}
-
 	// request logs
 	logs := "request: \n"
 	logs += c.Request.Method + " " + c.Request.RequestURI + " " + c.Request.Proto + "\n"
@@ -47,7 +40,7 @@ func (s *Controller) LogsMiddleware(c *gin.Context) {
 	c.Request.Body = ioutil.NopCloser(&buf)
 	log.Infof(logs)
 
-	wsConn.ch <- logs
+	s.wsProviderMap.SendTo(ID, logs)
 
 	blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 	c.Writer = blw
@@ -71,5 +64,5 @@ func (s *Controller) LogsMiddleware(c *gin.Context) {
 		logs += "... html response ...\n"
 	}
 
-	wsConn.ch <- logs
+	s.wsProviderMap.SendTo(ID, logs)
 }

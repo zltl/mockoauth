@@ -68,10 +68,7 @@ func (s *Controller) InfoPageWS(c *gin.Context) {
 		ch: make(chan string),
 	}
 
-	s.mu.Lock()
-	s.wsMap[ID] = wsConn
-	s.mu.Unlock()
-
+	s.wsProviderMap.Put(ID, wsConn)
 	rch := make(chan string)
 	defer close(rch)
 
@@ -87,9 +84,7 @@ func (s *Controller) InfoPageWS(c *gin.Context) {
 	defer func() {
 		wsConn.ws.Close()
 		close(wsConn.ch)
-		s.mu.Lock()
-		delete(s.wsMap, ID)
-		s.mu.Unlock()
+		s.wsProviderMap.Remove(ID, wsConn)
 	}()
 
 	for {
@@ -105,7 +100,6 @@ func (s *Controller) InfoPageWS(c *gin.Context) {
 				return
 			}
 			m.Type = "log"
-			// m.Data = html.EscapeString(msg)
 			m.Data = msg
 			toSend, _ := json.Marshal(&m)
 			err := ws.WriteMessage(websocket.TextMessage, toSend)
