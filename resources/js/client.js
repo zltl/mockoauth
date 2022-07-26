@@ -269,7 +269,7 @@ tokenButton.onclick = function() {
   const selected = selectType.options[selectType.selectedIndex].value;
   let data = {
     "type": "get_token",
-    "code": document.getElementById("code_content").innerText,
+    "code": document.getElementById("code_content").value,
     "client_id": document.getElementById("client_id").value,
     "client_secret": document.getElementById("client_secret").value,
     "token_url": document.getElementById("token_url").value,
