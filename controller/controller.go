@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 )
 
 // wsConn wrap websocket connection with session info
@@ -74,6 +75,13 @@ func (m *WSMap) Get(id string) []*wsConn {
 }
 
 func (m *WSMap) SendTo(id string, msg string) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			logrus.Error("Recovered in SendTo", r)
+		}
+	}()
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
