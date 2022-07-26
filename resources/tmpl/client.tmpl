@@ -95,25 +95,25 @@
 
             <hr>
 
-            <div id="code">
-                <p>code: </p>
-                <code id="code_content"></code>
+            <div id="code" class="form-group">
+                <label for="code_content" class="form-label">code</label>
+                <textarea class="form-control" id="code_content" rows="1" placeholder="code from redirect uri">
             </div>
             <button id="get_token_button" type="button" class="btn btn-primary">Get Token</button>
             <hr>
 
             <div id="token">
-                <div>
-                    <p>access_token: </p>
-                    <code class="text-justify text-wrap" id="access_token_content"></code>
+                <div class="form-group">
+                    <label for="access_token_content" class="form-label">access_token</label>
+                    <textarea class="form-control" id="access_token_content" rows="1" placeholder="access_token">
                 </div>
                 <div>
-                    <p>refresh_token: </p>
-                    <code class="text-justify text-wrap" id="refresh_token_content"></code>
+                    <label for="refresh_token_content" class="form-label">refresh_token</label>
+                    <textarea class="form-control" id="refresh_token_content" rows="1" placeholder="refresh_token">
                 </div>
                 <div>
-                    <p>expires_in: </p>
-                    <code class="text-justify text-wrap" id="expire_content"></code>
+                    <label for="expire_content" class="form-label">refresh_token</label>
+                    <input type="number" class="form-control" id="expire_content">
                 </div>
             </div>
             <button id="refresh_token_button" type="button" class="btn btn-primary">Refresh Token</button>

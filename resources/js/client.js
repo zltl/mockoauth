@@ -101,17 +101,13 @@ let xg_expires_in = 0;
 
 function updateExpiresIn() {
   const nowts = Math.round(Date.now() / 1000);
-  const secs = document.getElementById("expire_content").innerText;
+  const secs = document.getElementById("expire_content").value;
   if (secs === undefined || secs === "") {
     return;
   }
 
   expires_in = xg_expires_in - nowts;
-  if (expires_in <= 0) {
-    document.getElementById("expire_content").innerText = "--";
-  } else {
-    document.getElementById("expire_content").innerText = expires_in.toString();
-  }
+  document.getElementById("expire_content").value = expires_in;
 }
 window.setInterval(updateExpiresIn, 1000);
 
@@ -145,13 +141,13 @@ ws.onmessage = function(evt) {
   if (data.type === "log") {
     addLog(data.data);
   } else if (data.type === "code") {
-    document.getElementById("code_content").innerText = data.code;
+    document.getElementById("code_content").value = data.code;
   } else if (data.type === "token") {
-    document.getElementById("access_token_content").innerText = data.access_token;
+    document.getElementById("access_token_content").value = data.access_token;
     if (data.refresh_token) {
-      document.getElementById("refresh_token_content").innerText = data.refresh_token;
+      document.getElementById("refresh_token_content").value = data.refresh_token;
     }
-    document.getElementById("expire_content").innerText = data.expires_in.toString();
+    document.getElementById("expire_content").value = data.expires_in;
 
     xg_expires_in = Math.round(Date.now() / 1000) + data.expires_in;
   }
@@ -208,14 +204,14 @@ startButton.onclick = function() {
           kvsp = kv.split('=');
           key = kvsp[0];
           value = kvsp[1];
-          document.getElementById("expire_content").innerText = undefined;
+          document.getElementById("expire_content").value = undefined;
           if (key === "access_token") {
-            document.getElementById("access_token_content").innerText = value;
+            document.getElementById("access_token_content").value = value;
           } else if (key == "refresh_token") {
-            document.getElementById("refresh_token_content").innerText = value;
+            document.getElementById("refresh_token_content").value = value;
           } else if (key === "expires_in") {
             xg_expires_in = Math.round(Date.now() / 1000) + parseInt(value);
-            document.getElementById("expire_content").innerText = xg_expires_in.toString();
+            document.getElementById("expire_content").value = xg_expires_in;
           }
         });
       }
